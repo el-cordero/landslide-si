@@ -1,6 +1,6 @@
 library(terra)
 
-source('~/Documents/Projects/PRSN/Data/R/Hazus/_scripts/_data/func_flow_accumulation.R')
+source('~/Documents/Projects/PRSN/Data/R/Landslides/_scripts/_functions/func_flow_accumulation.R')
 
 dem <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/dem_PR_lowRes.tif')
 
