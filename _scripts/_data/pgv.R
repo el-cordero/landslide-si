@@ -4,7 +4,7 @@ path.in <- '~/Documents/Projects/PRSN/Hazus/Data/Spatial/Vector/'
 scenario <- c('1787','1867','1918')
 pgvFile <- '_pgv.shp'
 
-maskLayer <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/CCAP_Reclass_PR.tif')
+maskLayer <- vect('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Vector/Geology/PRgeology.shp')
 
 pgvList <- c()
 
@@ -31,7 +31,6 @@ for (i in 1:length(scenario)){
 pgvRaster$max <- max(pgvRaster[[1]],pgvRaster[[2]],pgvRaster[[3]],na.rm=TRUE)
 
 maskLayer <- project(maskLayer,pgvRaster)
-pgvRaster <- mask(pgvRaster,maskLayer)
 pgvRaster <- crop(pgvRaster,maskLayer,ext=TRUE)
 
 breaks <- c(0,5,10,15,20,25,30,35,40,45,50)
