@@ -27,15 +27,12 @@ cti <- resample(cti, lithoRaster)
 si <- -6.30 + 1.65 * log(pgv$SI.max) + 0.06 * slope$SI + lithoRaster$SI + (lc$SI * lc$Nowicki.Coef) + 
   0.03 * cti$SI + 0.01 * log(pgv$SI.max) * slope$SI
 
-rg <- range(values(si,na.rm=TRUE))
-seq(-40,5,5)
-breaks <- seq(-40,5,5)
-si2 <- classify(si,breaks)
-si <- c(si,si2)
+si$probability <- 1 / (1 + exp(-si))
 
-names(si) <- c('si','si.reclass')
 
-writeRaster(si,'~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/landslide_si.tif',
+plot(log(si$probability))
+plot(si$probability)
+
+writeRaster(si,'~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/landslide_probability.tif',
             overwrite=TRUE)
 
-# si <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/landslide_si.tif')

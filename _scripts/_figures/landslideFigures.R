@@ -3,7 +3,7 @@ library(tidyverse)
 library(tidyterra)
 library(ggplot2)
 
-mediaFolder <- '~/Documents/Projects/PRSN/Data/R/Landslides/_documentation/_media/'
+mediaFolder <- '~/Documents/Projects/PRSN/Landslides/_documentation/_media/'
 lithology <- vect('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Vector/Geology/PRgeology.shp')
 lc <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/CCAP/pr_2010_ccap_hr_land_cover20170214.img')
 lcReclass <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/CCAP_Reclass_PR.tif')
@@ -14,6 +14,16 @@ lc <- resample(lc,s)
 lcReclass <- resample(lcReclass,s)
 
 lithology <- lithology %>% filter(!is.na(FMATN))
+
+png(filename=paste0(mediaFolder,'lithology_Baweic.png'), height=6,width=15,units="in",res=300)
+baweic <- aggregate(lithology,'FMATN')
+baweic %>% ggplot() +
+  geom_spatvector(aes(fill=FMATN) ) +
+  labs(title='Lithology - Baweic et al. (1998) Map', fill='') + 
+  scale_fill_whitebox_d(palette = "bl_yl_rd") +
+  theme_bw() +
+  theme(legend.position='right')
+invisible(dev.off())
 
 png(filename=paste0(mediaFolder,'lithology_Nadim.png'), height=6,width=14.8,units="in",res=300)
 nadim <- aggregate(lithology,'lithology')

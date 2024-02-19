@@ -1,5 +1,7 @@
 library(terra)
 
+pgvReclass <- read.csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/cti.csv')
+
 path.in <- '~/Documents/Projects/PRSN/Hazus/Data/Spatial/Vector/'
 scenario <- c('1787','1867','1918')
 pgvFile <- '_pgv.shp'
@@ -26,18 +28,24 @@ for (i in 1:length(scenario)){
   pgvScenarioRaster <- rasterize(pgv[i],pgvRaster, 'PARAMVALUE')
   names(pgvScenarioRaster) <- scenario[i]
   pgvRaster[[i]] <- pgvScenarioRaster
+  rm(pgvScenarioRaster)
 }
+
+rm(pgv)
 
 pgvRaster$max <- max(pgvRaster[[1]],pgvRaster[[2]],pgvRaster[[3]],na.rm=TRUE)
 
 maskLayer <- project(maskLayer,pgvRaster)
 pgvRaster <- crop(pgvRaster,maskLayer,ext=TRUE)
 
-breaks <- c(0,5,10,15,20,25,30,35,40,45,50)
-pgvRaster2 <- classify(pgvRaster,breaks)
 
-names(pgvRaster2) <- paste0('SI.',names(pgvRaster2))
-pgvRaster <- c(pgvRaster,pgvRaster2 *1)
+
+pgvRasterReclass <- classify(pgvRaster,pgvReclass)
+
+names(pgvRasterReclass) <- paste0('SI.',names(pgvRasterReclass))
+pgvRaster <- c(pgvRaster,pgvRasterReclass)
+
+rm(pgvRasterReclass)
 
 writeRaster(pgvRaster,'~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/pgv.tif',
             overwrite=TRUE)
