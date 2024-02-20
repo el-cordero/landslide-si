@@ -6,7 +6,7 @@ source('~/Documents/Projects/PRSN/Landslides/_scripts/_functions/func_flow_accum
 ctiReclass <- read.csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/cti.csv')
 slopeReclass <- read.csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/slope.csv',sep='\t')
 dem <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/demSRTM_30m.tif')
-dem <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/dem_PR_lowRes.tif')
+# dem <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/dem_PR_lowRes.tif')
 slope <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/slopeSRTM_30m.tif')
 # extent <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/CCAP_Reclass_PR.tif')
 # dem <- get_elev_raster(extent, src='srtm15plus')
@@ -17,7 +17,7 @@ flowDir <- terrain(dem, "flowdir")
 # Estimate the flow accumulation
 Sys.time()
 flowAcc <- flow_accumulation(flowDir)
-sys.time()
+Sys.time()
 # Calculate Slope 
 # slope <- terrain(dem,'slope') # if not loaded in
 slope <- slope$slope * 1
@@ -27,10 +27,11 @@ names(slope) <- c('degrees','radians','SI')
 
 # Calculate Specific Catchment Area (SCA)
 sca <- flowAcc / tan(slope$radians)
+sca <- classify(sca,cbind(Inf,NA)) # remove Inf values
 
 # Calculate Compound Topographic Index (CTI):
 cti <- log(sca)
-cti$flowdir <- flowDir
+cti$flowDir <- flowDir
 cti$SI <- classify(cti,ctiReclass)
 names(cti) <- c('cti','flowdir','SI')
 

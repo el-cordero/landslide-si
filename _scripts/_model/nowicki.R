@@ -1,5 +1,6 @@
 library(terra)
 
+siReclass <- read.csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/si.csv')
 pgv <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/pgv.tif')
 lc <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/CCAP_Reclass_PR.tif')
 slope <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/slope_PR_lowRes.tif')
@@ -28,10 +29,7 @@ si <- -6.30 + 1.65 * log(pgv$SI.max) + 0.06 * slope$SI + lithoRaster$SI + (lc$SI
   0.03 * cti$SI + 0.01 * log(pgv$SI.max) * slope$SI
 
 si$probability <- 1 / (1 + exp(-si))
-
-
-plot(log(si$probability))
-plot(si$probability)
+si$classified <- classify(si$probability,siReclass)
 
 writeRaster(si,'~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/landslide_probability.tif',
             overwrite=TRUE)

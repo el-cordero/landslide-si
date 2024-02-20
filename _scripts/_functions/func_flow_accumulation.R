@@ -26,6 +26,7 @@ flow_accumulation <- function(flowDir, mask = FALSE) {
   # Update the flow accumulation raster with computed values
   values(flowAcc) <- flowAccVec
   
+  # mask if you need to with the flowDir raster
   if (mask) {
     flowAcc <- mask(flowAcc, flowDir)
   }

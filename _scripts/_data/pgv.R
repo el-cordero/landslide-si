@@ -1,51 +1,53 @@
 library(terra)
 
-pgvReclass <- read.csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/cti.csv')
+pgv_files <- list.files('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Vector/Shakemap/pgv',full.names = TRUE)
 
-path.in <- '~/Documents/Projects/PRSN/Hazus/Data/Spatial/Vector/'
-scenario <- c('1787','1867','1918')
-pgvFile <- '_pgv.shp'
+r <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/demSRTM_30m.tif')
 
-maskLayer <- vect('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Vector/Geology/PRgeology.shp')
+pgv_outpath <- '/Users/EC13/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/Shakemap/pgv/'
 
-pgvList <- c()
+eq_parameter_rast <- function(eqData,r,filepath, datatype){
+  # eqRasterStack <- c()
+  for (i in 1:length(eqData)){
+    eq <- vect(eqData[i])
+    eq <- as.polygons(eq)
+    eq <- project(eq,r)
 
+    eqRaster <- rast(ext=ext(eq),crs=crs(r),res=res(r))
 
-for (i in 1:length(scenario)){
-  print(scenario[i])
-  pgv <- vect(paste0(path.in,scenario[i],pgvFile))
-  names(pgv) <- toupper(names(pgv))
-  pgv <- pgv[,'PARAMVALUE']
-  pgvList <- c(pgvList,pgv)
+    eqRaster <- rasterize(eq,eqRaster,'value')
+    
+    # writeRaster(eqRaster,paste0(filepath,datatype,'_',i,'.tif'),overwrite=TRUE)
+    
+    # eqRasterStack <- c(eqRasterStack,eqRaster)
+    # rm(eqRaster)
+    print(eqData[i])
+  }
+  
+  # return(eqRasterStack)
+  
+  # }
 }
 
-pgv <- svc(pgvList)
 
 
-pgvRaster <- rast(crs=crs(pgv[1]),ext=ext(pgv[1]), nlyr=length(scenario))
 
-for (i in 1:length(scenario)){
-  pgvScenarioRaster <- rasterize(pgv[i],pgvRaster, 'PARAMVALUE')
-  names(pgvScenarioRaster) <- scenario[i]
-  pgvRaster[[i]] <- pgvScenarioRaster
-  rm(pgvScenarioRaster)
+Sys.time()
+eq_parameter_rast(pgv_files,r,pgv_outpath,'pgv')
+Sys.time()
+
+eqRasterStack <- sprc(eqRasterStack)
+
+eqData <- pgv_files[1]
+eqRasterStack <- c()
+for (i in 1:length(eqData)){
+  eq <- vect(eqData[i])
+  eq <- as.polygons(eq)
+  eq <- project(eq,r)
+  eqRaster <- rast(ext=ext(eq),crs=crs(r),res=res(r))
+  eqRaster <- rasterize(eq,eqRaster,'value')
+  eqRasterStack <- c(eqRasterStack,eqRaster)
+  rm(eqRaster)
 }
 
-rm(pgv)
 
-pgvRaster$max <- max(pgvRaster[[1]],pgvRaster[[2]],pgvRaster[[3]],na.rm=TRUE)
-
-maskLayer <- project(maskLayer,pgvRaster)
-pgvRaster <- crop(pgvRaster,maskLayer,ext=TRUE)
-
-
-
-pgvRasterReclass <- classify(pgvRaster,pgvReclass)
-
-names(pgvRasterReclass) <- paste0('SI.',names(pgvRasterReclass))
-pgvRaster <- c(pgvRaster,pgvRasterReclass)
-
-rm(pgvRasterReclass)
-
-writeRaster(pgvRaster,'~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/pgv.tif',
-            overwrite=TRUE)
