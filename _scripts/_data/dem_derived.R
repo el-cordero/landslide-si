@@ -1,7 +1,7 @@
 library(terra)
 library(elevatr)
 
-source('~/Documents/Projects/PRSN/Landslides/_scripts/_functions/func_flow_accumulation.R')
+source('~/Documents/Projects/PRSN/Landslides/_scripts/_functions/flow_accumulation.R')
 
 ctiReclass <- read.csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/cti.csv')
 slopeReclass <- read.csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/slope.csv',sep='\t')

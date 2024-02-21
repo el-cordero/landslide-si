@@ -2,8 +2,8 @@ library(terra)
 library(tidyverse)
 library(tidyterra)
 
-source('~/Documents/Projects/PRSN/Data/R/Hazus/_scripts/_data/func_si_lithology.R')
-source('~/Documents/Projects/PRSN/Data/R/Hazus/_scripts/_data/func_reclass_nadim.R')
+source('~/Documents/Projects/PRSN/Data/R/Hazus/_scripts/_data/si_lithology.R')
+source('~/Documents/Projects/PRSN/Data/R/Hazus/_scripts/_data/reclass_nadim.R')
 path.in <- '~/Documents/Projects/PRSN/Hazus/Data/Spatial/Vector/'
 
 lithology <- vect(paste0(path.in,'Geology/PR_geology_proj.shp'))

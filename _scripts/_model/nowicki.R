@@ -1,7 +1,7 @@
 library(terra)
 
 siReclass <- read.csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/si.csv')
-pgv <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/pgv.tif')
+pgv <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/Shakemap/pgv/pgv_grid_si.tif')
 lc <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/CCAP_Reclass_PR.tif')
 slope <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/slope_PR_lowRes.tif')
 cti <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/cti.tif')
@@ -25,8 +25,8 @@ cti <- resample(cti, lithoRaster)
 
 
 
-si <- -6.30 + 1.65 * log(pgv$SI.max) + 0.06 * slope$SI + lithoRaster$SI + (lc$SI * lc$Nowicki.Coef) + 
-  0.03 * cti$SI + 0.01 * log(pgv$SI.max) * slope$SI
+si <- -6.30 + 1.65 * log(pgv$si.max) + 0.06 * slope$SI + lithoRaster$SI + (lc$SI * lc$Nowicki.Coef) + 
+  0.03 * cti$SI + 0.01 * log(pgv$si.max) * slope$SI
 
 si$probability <- 1 / (1 + exp(-si))
 si$classified <- classify(si$probability,siReclass)
