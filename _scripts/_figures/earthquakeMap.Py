@@ -1,8 +1,16 @@
 import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 from mpl_toolkits.basemap import Basemap
 
+pd.read_csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/earthquake_data.csv')
+
+lats = np.array([feature['geometry']['coordinates'][1] for feature in features])
+lons = np.array([feature['geometry']['coordinates'][0] for feature in features])
+magnitudes = np.array([feature['properties']['mag'] for feature in features])
+
 fig, ax = plt.subplots(figsize=(10, 8))
-map = Basemap(projection='merc', llcrnrlat=17, urcrnrlat=19, llcrnrlon=-67, urcrnrlon=-65, resolution='i')
+map = Basemap(projection='merc', llcrnrlat=16, urcrnrlat=21, llcrnrlon=-70, urcrnrlon=-65, resolution='i')
 map.drawcoastlines()
 map.drawcountries()
 map.drawstates()

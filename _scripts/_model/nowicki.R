@@ -30,6 +30,8 @@ si <- -6.30 + 1.65 * log(pgv$si.max) + 0.06 * slope$SI + lithoRaster$SI + (lc$SI
 
 si$probability <- 1 / (1 + exp(-si))
 si$classified <- classify(si$probability,siReclass)
+si$classified0to5 <- round((si$classified / 2) + 0.01)
+unique(values(si$classified0to5,na.rm=TRUE))
 
 writeRaster(si,'~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/landslide_probability.tif',
             overwrite=TRUE)
