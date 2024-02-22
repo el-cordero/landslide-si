@@ -1,3 +1,6 @@
 [submodule "/Users/EC13/Documents/Projects/PRSN/Landslides/_docs"]
 	path = /Users/EC13/Documents/Projects/PRSN/Landslides/_docs
 	url = https://github.com/el-cordero/landslide-docs.git
+[submodule "/Users/EC13/Documents/Projects/PRSN/Landslides/_scripts/_func"]
+	path = /Users/EC13/Documents/Projects/PRSN/Landslides/_scripts/_func
+	url = https://github.com/el-cordero/landslide-functions.git
