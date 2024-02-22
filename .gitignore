@@ -2,3 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
+
+.Rmd
+.pdf
+.Rproj
+_ss/
+_functions/
