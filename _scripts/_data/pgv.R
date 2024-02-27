@@ -1,6 +1,7 @@
 library(terra)
 
-pgvReclass <- read.csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/pgv.csv')
+# pgvReclass <- read.csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/pgv.csv')
+pgvReclass <- read.csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/pgv5.csv')
 
 pgv <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/Shakemap/pgv/pgv_grid.tif')
 

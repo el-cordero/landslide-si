@@ -2,23 +2,28 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from mpl_toolkits.basemap import Basemap
+import ast
 
-pd.read_csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/earthquake_data.csv')
+features = pd.read_csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/earthquake_data.csv')
 
-lats = np.array([feature['geometry']['coordinates'][1] for feature in features])
-lons = np.array([feature['geometry']['coordinates'][0] for feature in features])
-magnitudes = np.array([feature['properties']['mag'] for feature in features])
+features = features.sort_values('mag',ascending=True)
 
 fig, ax = plt.subplots(figsize=(10, 8))
-map = Basemap(projection='merc', llcrnrlat=16, urcrnrlat=21, llcrnrlon=-70, urcrnrlon=-65, resolution='i')
+x, y = map(np.array(features.lon), np.array(features.lat))
+map = Basemap(projection='merc', llcrnrlat=min(features.lat), urcrnrlat=max(features.lat), 
+              llcrnrlon=min(features.lon), urcrnrlon=max(features.lon), resolution='i')
 map.drawcoastlines()
 map.drawcountries()
 map.drawstates()
 map.drawmapboundary(fill_color='aqua')
 map.fillcontinents(color='coral',lake_color='aqua')
-x, y = map(lons, lats)
-scatter = map.scatter(x, y, s=magnitudes * 10, c=magnitudes, cmap='Reds', alpha=0.7, edgecolors="k", linewidth=0.5)
+x, y = map(np.array(features.lon), np.array(features.lat))
+scatter = map.scatter(x, y, s=np.array(features.mag) * 10, c=np.array(features.mag),
+                      cmap='Reds', alpha=0.7, edgecolors="k", linewidth=0)
 
 plt.colorbar(scatter, label='Magnitude')
 plt.title('Custom ShakeMap: Earthquake Magnitudes in Puerto Rico')
 plt.show()
+
+
+features.to_csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/earthquake_data_refined.csv')

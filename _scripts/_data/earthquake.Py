@@ -4,25 +4,46 @@ import requests
 import numpy as np
 import pandas as pd
 from datetime import datetime
+import ast
+
+# local functions:
+# convert_unix_to_date
+# fetch_earthquake_data
+
+fetch_points = pd.read_csv('/Users/EC13/Documents/Projects/PRSN/Hazus/Data/Tables/earthquake_center.csv')
 
 # Example usage
-earthquake_data = fetch_earthquake_data("1500-01-01", "2023-02-19", 
-                                        3, 18.2208, -66.5901, 200)
+start_date = "1500-01-01"
+end_date = "2023-02-19"
+min_mag = 3
+distance = 200
 
 
-extract_pga_pgv(earthquake_data)
-features = earthquake_data['features']
-eqdata = pd.DataFrame(features)
+
+# Initialize an empty DataFrame for eqdf if not already defined
+eqdf = pd.DataFrame()
 
 
-expanded_properties = eqdata['properties'].apply(pd.Series)
-expanded_geom = eqdata['geometry'].apply(pd.Series)
-eqdata = eqdata.drop(['properties','geometry'], axis=1)
-eqdata = pd.concat([eqdata, expanded_properties, expanded_geom], axis=1)
+for lat, lon in zip(fetch_points.y, fetch_points.x):
+    df = fetch_earthquake_data(start_date, end_date, min_mag, lat, lon, distance)
+    # Check if the DataFrame is not empty
+    if not df.empty:
+        # Use pd.concat to combine eqdf and the new df if df is not empty
+        eqdf = pd.concat([eqdf, df], ignore_index=True)
+    
 
+eqdf = eqdf.drop_duplicates(subset='id')
 
-eqdata.time = eqdata.time.apply(convert_unix_to_date)
-eqdata.updated = eqdata.updated.apply(convert_unix_to_date)
+eqdf = eqdf.sort_values(by='time')
+eqdf = eqdf.reset_index()
+eqdf = eqdf.drop('index',axis=1)
 
-eqdata.to_csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/earthquake_data.csv')
+eqdf.to_csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/earthquake_data.csv')
 
+eqdf = pd.read_csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/earthquake_data.csv')
+
+coordinates = eqdf['coordinates'].apply(ast.literal_eval)
+eqdf[['lon', 'lat', 'value']] = pd.DataFrame(coordinates.tolist(), index=eqdf.index)
+eqdf = eqdf.drop('coordinates',axis=1)
+
+eqdf.to_csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/earthquake_data.csv')
