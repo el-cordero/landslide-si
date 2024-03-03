@@ -8,6 +8,9 @@ pgv <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/Shakemap/pgv/pg
 pgv$si.max <- classify(pgv$max,pgvReclass)
 pgv$si.median <- classify(pgv$median,pgvReclass)
 
+pgv <- project(pgv, 'EPSG:26920',method='near')
 
 writeRaster(pgv,'~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/Shakemap/pgv/pgv_grid_si.tif',
             overwrite=TRUE)
+
+rm(pgv)

@@ -3,23 +3,26 @@ library(terra)
 lc <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/CCAP/pr_2010_ccap_hr_land_cover20170214.img')
 tbReclass <- read.csv('~/Documents/Projects/PRSN/Hazus/Data/Tables/ccapClassification.csv')
 
+# remove levels because this will increase the size of the dataset
+levels(lc) <- NULL
 
-s <- rast(ext=ext(lc),crs=crs(lc),resolution=150)
-lc <- resample(lc,s)
+# reproject to NAD83 / UTM zone 20N (EPSG:26920)
+lc <- project(lc, 'EPSG:26920',method='near')
 
-lcReclass <- classify(lc,tbReclass[,c('CCAP.Value','GlobCover.Value')])
-lcSI <- classify(lc,tbReclass[,c('CCAP.Value','Landslide.SI')])
-lcCoef <- classify(lc,tbReclass[,c('CCAP.Value','Nowicki.Coef')])
+names(lc) <- 'CCAP'
 
-lvls <- tbReclass[!duplicated(tbReclass[c('GlobCover.Value')]), 
-                  c('GlobCover.Value',"Globcover.Class.Description")]
-lvls <- lvls[!is.na(lvls$Globcover.Class.Description),]
-levels(lcReclass) <- lvls
+# reclassify to globcover, SI, and nowicki coefficient
+lc$Globcover <- classify(lc,tbReclass[,c('CCAP.Value','GlobCover.Value')])
+lc$SI <- classify(lc,tbReclass[,c('CCAP.Value','SI_0to5')])
+lc$NowCoef <- classify(lc,tbReclass[,c('CCAP.Value','Nowicki.Coef')])
 
-lcReclass <- c(lcReclass,lcSI,lcCoef)
-names(lcReclass) <- c('Globcover.Desc','SI','Nowicki.Coef')
+# lvls <- tbReclass[!duplicated(tbReclass[c('GlobCover.Value')]), 
+#                   c('GlobCover.Value',"Globcover.Class.Description")]
+# lvls <- lvls[!is.na(lvls$Globcover.Class.Description),]
+# levels(lcReclass) <- lvls
 
-writeRaster(lcReclass,'~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/CCAP_Reclass_PR.tif',
+
+writeRaster(lc,'~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/CCAP_Reclass_PR.tif',
             overwrite=TRUE)
 
-
+rm(lc)

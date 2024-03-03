@@ -3,17 +3,18 @@ library(tidyverse)
 library(tidyterra)
 library(ggplot2)
 
-mediaFolder <- '~/Documents/Projects/PRSN/Landslides/_documentation/_media/'
-lithology <- vect('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Vector/Geology/PRgeology.shp')
+mediaFolder <- '~/Documents/Projects/PRSN/Landslides/_docs/_media/'
+lithology <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/lithology.tif')
+lithologyReclass <- read.csv('/Users/EC13/Documents/Projects/PRSN/Hazus/Data/Tables/HughesClassification.csv')
 lc <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/CCAP/pr_2010_ccap_hr_land_cover20170214.img')
 lcReclass <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/CCAP_Reclass_PR.tif')
 si <- rast('~/Documents/Projects/PRSN/Hazus/Data/Spatial/Raster/landslide_si.tif')
 
-s <- rast(ext=ext(lc),crs=crs(lc),resolution=150)
-lc <- resample(lc,s)
-lcReclass <- resample(lcReclass,s)
+# s <- rast(ext=ext(lc),crs=crs(lc),resolution=150)
+# lc <- resample(lc,s)
+# lcReclass <- resample(lcReclass,s)
 
-lithology <- lithology %>% filter(!is.na(FMATN))
+
 
 png(filename=paste0(mediaFolder,'lithology_Baweic.png'), height=6,width=15,units="in",res=300)
 baweic <- aggregate(lithology,'FMATN')
@@ -40,6 +41,18 @@ nowicki <- aggregate(lithology,'lithology_')
 nowicki %>% ggplot() +
   geom_spatvector(aes(fill=lithology_) ) +
   labs(title='Lithology - Nowicki Jessee et al. (2018) Classification', fill='') + 
+  scale_fill_whitebox_d(palette = "bl_yl_rd") +
+  theme_bw() +
+  theme(legend.position='bottom')
+invisible(dev.off())
+
+lvls <- lithologyReclass[c('Value',"NowickiClass")]
+
+levels(lithology) <- lvls
+png(filename=paste0(mediaFolder,'lithology_hughes_reclass.png'), height=6,width=13,units="in",res=500)
+ggplot() +
+  geom_spatraster(data=lithology$NowickiClass) +
+  labs(title='Lithology - Hartmann and Moosdorf (2012) Classification', fill='') + 
   scale_fill_whitebox_d(palette = "bl_yl_rd") +
   theme_bw() +
   theme(legend.position='bottom')
