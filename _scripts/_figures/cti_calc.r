@@ -14,7 +14,7 @@ flowgrid <- matrix(flowgrid,nrow=3,ncol=3,byrow = TRUE)
 flowgrid <- rast(flowgrid)
 plot(flowgrid,legend=FALSE,main='(a) Flow Direction Values',
     axes=FALSE, box=TRUE)
-text(flowgrid,legend=FALSE)
+text(flowgrid)
 
 labels <- letters[1:(n*n)]
 labels <- matrix(labels,ncol = n,nrow = n,byrow = TRUE)
@@ -50,6 +50,6 @@ plot(flowacc,legend=FALSE, main='(f) Flow Accumulation',
     axes=FALSE, box=TRUE)
 text(flowacc)
 
-dev.off()
+invisible(dev.off())
 
 par(mfcol=c(1,1))
